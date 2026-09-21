@@ -22,8 +22,8 @@
     {
         "UpdateStageName": "App Download",
         "UpdateSourcePlatform": "All",
-        "UpdateSource": "GithubRelease",
-        "UpdateSourceArgs": "{{DownloadSource}}",
+        "UpdateSource": "Bash",
+        "UpdateSourceArgs": "TOKEN=\"{{DownloadPassword}}\"; REPO=$(echo \"{{DownloadSource}}\" | sed 's|^https://github.com/||; s|\\.git$||; s|/$||'); VER=\"{{DownloadVersion}}\"; FILE=\"{{DownloadFilename}}\"; if [ -n \"$VER\" ]; then API=\"https://api.github.com/repos/$REPO/releases/tags/$VER\"; else API=\"https://api.github.com/repos/$REPO/releases/latest\"; fi; URL=$(curl -fsSL -H \"Authorization: token $TOKEN\" -H \"Accept: application/vnd.github+json\" -H \"User-Agent: AMP\" \"$API\" | jq -r --arg f \"$FILE\" '.assets[] | select(.name==$f) | .url'); if [ -z \"$URL\" ] || [ \"$URL\" = \"null\" ]; then echo \"Asset $FILE not found in $REPO\" >&2; exit 1; fi; curl -fsSL -H \"Authorization: token $TOKEN\" -H \"Accept: application/octet-stream\" -H \"User-Agent: AMP\" \"$URL\"",
         "UpdateSourceData": "{{DownloadFilename}}",
         "UpdateSourceVersion": "{{DownloadVersion}}",
         "UpdateSourceTarget": "{{$FullBaseDir}}",
